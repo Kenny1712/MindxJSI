@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <title>Document</title>
+  </head>
+  <style>
+    body {
+      background-color: palegreen;
+    }
+    .container {
+      margin-left: 440px;
+      margin-top: 150px;
+      max-width: 600px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 36px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      height: 420px;
+    }
+    .container h1 {
+      text-align: center;
+      color: #333;
+    }
+    .container input {
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    #userForm {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    #sss {
+      padding: 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      cursor: pointer;
+      max-width: 150px;
+      margin-left: 230px;
+      transition: 0.6s;
+    }
+    #sss:hover {
+      background-color: #1a3b1c;
+      transition: 0.6s;
+    }
+    h3 {
+      text-align: center;
+      color: #555;
+      margin-top: 20px;
+    }
+  </style>
+  <body>
+    <div class="container">
+      <h1>Đăng ký tài khoản</h1>
+      <form id="userForm">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <input
+          type="password"
+          id="confirmPassword"
+          placeholder="Confirm Password"
+          required
+        />
+        <button id="sss" type="submit">Đăng ký</button>
+      </form>
+      <h3>----------- Hoặc đăng nhập bằng Google -----------</h3>
+      <button
+        id="google-login-btn"
+        class="w-full flex items-center justify-center gap-4 bg-white border-2 border-gray-100 hover:border-blue-500 hover:bg-blue-50 py-3.5 px-6 rounded-xl transition-all duration-300 group"
+      >
+        <img
+          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+          class="w-6 h-6 group-hover:scale-110 transition-transform"
+        />
+        <span
+          id="btn-text"
+          class="font-bold text-gray-700 group-hover:text-blue-700"
+          >Tiếp tục với Google</span
+        >
+      </button>
+    </div>
+  </body>
+  <script type="module">
+    // Import trực tiếp từ CDN (Không cần thẻ script riêng)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signOut,
+      onAuthStateChanged,
+      createUserWithEmailAndPassword,
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyC45gQXaNbzqWL_PVaMwQh-ykB9D8ubToQ",
+      authDomain: "jsi1-62459.firebaseapp.com",
+      projectId: "jsi1-62459",
+      storageBucket: "jsi1-62459.firebasestorage.app",
+      messagingSenderId: "479908203748",
+      appId: "1:479908203748:web:8ba99a500ac868f7f370f1",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    const loginView = document.getElementById("login-view");
+    const dashboardView = document.getElementById("dashboard-view");
+    const btnText = document.getElementById("btn-text");
+    const errorMsg = document.getElementById("error-msg");
+    const button = document.getElementById("sss");
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      if (confirmPassword !== password) {
+        alert("Passwords do not match");
+        return;
+      }
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          // ...
+          alert("User created successfully");
+          window.location.href = "login.html";
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // ..
+        });
+      // Sự kiện Đăng nhập
+      document.getElementById("google-login-btn").onclick = async () => {
+        btnText.innerHTML = '<span class="loader"></span> Đang kết nối...';
+        errorMsg.classList.add("hidden");
+
+        try {
+          await signInWithPopup(auth, provider);
+        } catch (error) {
+          console.error(error);
+          btnText.innerText = "Tiếp tục với Google";
+          errorMsg.innerText = "Lỗi: " + error.message;
+          errorMsg.classList.remove("hidden");
+        }
+      };
+    });
+
+   
+
+
+  </script>
+</html>

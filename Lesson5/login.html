@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Store - Đăng nhập</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4 font-sans text-gray-900">
+
+    <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-100">
+        <!-- Logo Section -->
+        <div class="text-center mb-8">
+            <div class="bg-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-200">
+                <i class="fas fa-mobile-alt text-3xl text-white"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 tracking-tight">Phone Store <span class="text-blue-600">PRO</span></h1>
+            <p class="text-gray-500 text-sm mt-1">Hệ thống quản trị cửa hàng điện thoại</p>
+        </div>
+
+        <!-- Google Login Button -->
+        <div class="space-y-4">
+            <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 hover:border-blue-500 hover:bg-blue-50 py-3 rounded-xl transition-all duration-300 group">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 group-hover:scale-110 transition-transform">
+                <span class="font-bold text-gray-700">Tiếp tục với Google</span>
+            </button>
+
+            <div class="relative flex py-3 items-center">
+                <div class="flex-grow border-t border-gray-200"></div>
+                <span class="flex-shrink mx-4 text-gray-400 text-[10px] uppercase font-black tracking-widest">Hoặc đăng nhập Email</span>
+                <div class="flex-grow border-t border-gray-200"></div>
+            </div>
+
+            <!-- Email Login Form -->
+            <div class="space-y-4">
+                <div class="relative">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase mb-1 tracking-wider ml-1">Email</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+                        <input type="email" id="email-input" class="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-xl pl-10 pr-4 py-3 outline-none transition-all" placeholder="admin@example.com">
+                    </div>
+                </div>
+                <div class="relative">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase mb-1 tracking-wider ml-1">Mật khẩu</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+                        <input type="password" id="pass-input" class="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-xl pl-10 pr-4 py-3 outline-none transition-all" placeholder="••••••••">
+                    </div>
+                </div>
+                <button id="email-login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-100 flex items-center justify-center gap-2">
+                    <span id="btn-text">Đăng nhập</span>
+                    <div id="btn-loader" class="loader hidden"></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Links -->
+        <div class="mt-8 text-center space-y-2">
+            <p class="text-sm text-gray-500">
+                Chưa có tài khoản? 
+                <a href="register.html" class="text-blue-600 font-bold hover:underline">Đăng ký ngay</a>
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { 
+            getAuth, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            signInWithEmailAndPassword, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+
+        // Sử dụng cấu hình từ dự án của bạn
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgLjZQHmZQoLWYDepZ6Giywpfrk4zx8U0",
+            authDomain: "phone-store-bf10d.firebaseapp.com",
+            projectId: "phone-store-bf10d",
+            storageBucket: "phone-store-bf10d.firebasestorage.app",
+            messagingSenderId: "528404074319",
+            appId: "1:528404074319:web:2fb4661b870feef8de3f3a",
+            measurementId: "G-0WDL5NHVNZ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+
+        // Kiểm tra nếu đã đăng nhập thì chuyển thẳng vào home.html
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = 'home.html';
+            }
+        });
+
+        // Xử lý đăng nhập Google
+        document.getElementById('google-login-btn').onclick = async () => {
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error("Lỗi Google:", error);
+                alert("Đăng nhập Google thất bại: " + error.message);
+            }
+        };
+
+        // Xử lý đăng nhập Email/Password
+        document.getElementById('email-login-btn').onclick = async () => {
+            const email = document.getElementById('email-input').value;
+            const pass = document.getElementById('pass-input').value;
+
+            if (!email || !pass) {
+                alert("Vui lòng điền đầy đủ thông tin!");
+                return;
+            }
+
+            // Hiệu ứng Loading
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (error) {
+                btnText.classList.remove('hidden');
+                btnLoader.classList.add('hidden');
+                console.error("Lỗi Email:", error);
+                alert("Sai tài khoản hoặc mật khẩu!");
+            }
+        };
+    </script>
+</body>
+</html>

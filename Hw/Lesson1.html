@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Count True in Array</title>
+</head>
+<body>
+    <h1>Đếm số lượng true trong mảng</h1>
+    
+    <script>
+        function countTrue(skibidi) {
+            return skibidi.filter(item => item === true).length;
+        }
+        console.log(countTrue([true, false, false, true, false]));
+        console.log(countTrue([false, false, false, false]));     
+        console.log(countTrue([]));
+    </script>
+</body>
+</html>

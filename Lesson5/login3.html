@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cửa hàng Điện thoại - Đăng nhập</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .loader {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #3498db;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    <div
+      class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100"
+    >
+      <!-- Logo/Icon -->
+      <div class="flex justify-center mb-6">
+        <div class="bg-blue-600 p-4 rounded-2xl shadow-lg shadow-blue-200">
+          <i class="fas fa-mobile-alt text-4xl text-white"></i>
+        </div>
+      </div>
+
+      <h1 class="text-3xl font-extrabold text-gray-900 mb-2 text-center">
+        Phone Store
+      </h1>
+      <p class="text-gray-500 mb-8 text-center text-sm">
+        Vui lòng đăng nhập để xem ưu đãi mới nhất
+      </p>
+
+      <!-- Màn hình Đăng nhập -->
+      <div id="login-view" class="space-y-4">
+        <button
+          id="google-login-btn"
+          class="w-full flex items-center justify-center gap-4 bg-white border-2 border-gray-100 hover:border-blue-500 hover:bg-blue-50 py-3.5 px-6 rounded-xl transition-all duration-300 group"
+        >
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            class="w-6 h-6 group-hover:scale-110 transition-transform"
+          />
+          <span
+            id="btn-text"
+            class="font-bold text-gray-700 group-hover:text-blue-700"
+            >Tiếp tục với Google</span
+          >
+        </button>
+        <p id="error-msg" class="text-red-500 text-xs text-center hidden"></p>
+      </div>
+
+      <!-- Màn hình Thành viên -->
+      <div id="dashboard-view" class="hidden animate-fade-in text-center">
+        <div class="relative inline-block mb-4">
+          <img
+            id="user-photo"
+            src=""
+            class="w-24 h-24 rounded-full border-4 border-white shadow-xl mx-auto"
+          />
+          <div
+            class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full"
+          ></div>
+        </div>
+        <h2 class="text-xl font-bold text-gray-800" id="user-name"></h2>
+        <p class="text-gray-500 text-sm mb-8" id="user-email"></p>
+
+        <div class="grid grid-cols-2 gap-4 mb-8">
+          <div class="bg-blue-50 p-3 rounded-xl">
+            <span class="block text-xs text-blue-600 font-bold uppercase"
+              >Hạng thẻ</span
+            >
+            <span class="text-blue-900 font-bold">Thành viên</span>
+          </div>
+          <div class="bg-purple-50 p-3 rounded-xl">
+            <span class="block text-xs text-purple-600 font-bold uppercase"
+              >Điểm thưởng</span
+            >
+            <span class="text-purple-900 font-bold">0 pts</span>
+          </div>
+        </div>
+
+        <button
+          id="logout-btn"
+          class="w-full text-gray-400 hover:text-red-600 text-sm font-medium transition-colors"
+        >
+          <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất tài khoản
+        </button>
+      </div>
+    </div>
+
+    <script type="module">
+      // Import trực tiếp từ CDN (Không cần thẻ script riêng)
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+      import {
+        getAuth,
+        GoogleAuthProvider,
+        signInWithPopup,
+        signOut,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+
+      // Cấu hình của bạn
+      const firebaseConfig = {
+        apiKey: "AIzaSyC45gQXaNbzqWL_PVaMwQh-ykB9D8ubToQ",
+        authDomain: "jsi1-62459.firebaseapp.com",
+        projectId: "jsi1-62459",
+        storageBucket: "jsi1-62459.firebasestorage.app",
+        messagingSenderId: "479908203748",
+        appId: "1:479908203748:web:8ba99a500ac868f7f370f1",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
+
+      const loginView = document.getElementById("login-view");
+      const dashboardView = document.getElementById("dashboard-view");
+      const btnText = document.getElementById("btn-text");
+      const errorMsg = document.getElementById("error-msg");
+
+      // Sự kiện Đăng nhập
+      document.getElementById("google-login-btn").onclick = async () => {
+        btnText.innerHTML = '<span class="loader"></span> Đang kết nối...';
+        errorMsg.classList.add("hidden");
+
+        try {
+          await signInWithPopup(auth, provider);
+        } catch (error) {
+          console.error(error);
+          btnText.innerText = "Tiếp tục với Google";
+          errorMsg.innerText = "Lỗi: " + error.message;
+          errorMsg.classList.remove("hidden");
+        }
+      };
+
+      // Sự kiện Đăng xuất
+      document.getElementById("logout-btn").onclick = () => signOut(auth);
+
+      // Theo dõi trạng thái
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          loginView.classList.add("hidden");
+          dashboardView.classList.remove("hidden");
+          document.getElementById("user-name").textContent = user.displayName;
+          document.getElementById("user-email").textContent = user.email;
+          document.getElementById("user-photo").src = user.photoURL;
+        } else {
+          loginView.classList.remove("hidden");
+          dashboardView.classList.add("hidden");
+          btnText.innerText = "Tiếp tục với Google";
+        }
+      });
+    </script>
+  </body>
+</html>
